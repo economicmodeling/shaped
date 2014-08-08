@@ -1,0 +1,13 @@
+{
+	"name": "shaped",
+	"description": "A library for reading and writing Shapefiles for the D language",
+	"copyright": "Copyright © 2014, Economic Modeling Specialists, Intl.",
+	"authors": ["Justin Whear <justin@economicmodeling.com>"],
+	"targetPath":"lib",
+	"license":"MIT",
+	"dependencies": {
+	},
+	"subPackages":[
+		{ "name":"examples", "targetPath":"bin", "sourcePaths":["examples"] }
+	]
+}
