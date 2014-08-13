@@ -3,4 +3,5 @@ module shaped;
 public import shaped.format,
 	shaped.geometry,
 	shaped.shapefile.reader,
-	shaped.shapefile.writer;
+	shaped.shapefile.writer,
+	shaped.xbase.reader;

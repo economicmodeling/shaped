@@ -124,7 +124,12 @@ struct xBaseRow
 			void popFront()
 			{
 				assert(!empty);
-				i++;
+				++i;
+			}
+
+			auto save() @property
+			{
+				return this;
 			}
 
 			auto opIndex(size_t i) @property const
@@ -132,7 +137,7 @@ struct xBaseRow
 				return value(i);
 			}
 
-			private auto value(size_t index) @property const
+			private string value(size_t index) @property const
 			{
 				string ret;
 				auto o = parent._offsets[index];
@@ -166,7 +171,9 @@ struct xBaseRangeReader(R)
 		xBaseHeader _header;
 		xBaseFieldDescriptor[] _columns;
 		ushort[] _fieldOffsets;
-		//uint _recordLength;
+
+		bool _empty = false;
+		size_t curRecordI = 0;
 	}
 	bool ignoreDeleted = true;	///
 
@@ -187,41 +194,59 @@ struct xBaseRangeReader(R)
 
 		readHeader();
 
-		if (!empty)
+		if (_input.empty)
+			_empty = true;
+		else
 			popFront();	// prime _front
 	}
 
 	bool empty() @property// const
 	{
-		return _input.empty;
+		return _empty;
 	}
 
 	xBaseRow front() @property// const
 	{
+		assert(!empty);
 		return _front;
 	}
 
 	void popFront()
 	{
-		static if (hasSlicing!R)
-			_front = xBaseRow( _columns, _fieldOffsets, _input[0 .. _header.recordLength].dup);
-		else {
+		assert(!empty);
+		if (_input.empty || _input.front == 0x1a || curRecordI >= _header.numRecords)
+		{
+			_empty = true;
+			return;
+		}
+
+		/* static if (hasSlicing!R) */
+		/* 	_front = xBaseRow( _columns, _fieldOffsets, _input[0 .. _header.recordLength].dup); */
+		/* else { */
 			static Latin1Char[] rowBuf;
 			if (!rowBuf)
 				rowBuf = new Latin1Char[](_header.recordLength);
 			foreach (ref el; rowBuf)
 			{
+				assert(!_input.empty);
 				el = cast(Latin1Char)_input.front;
 				_input.popFront();
 			}
-			_front = xBaseRow( _columns, _fieldOffsets, rowBuf[0 .. _header.recordLength].dup);
-		}
+			_front = xBaseRow( _columns, _fieldOffsets, rowBuf[0 .. _header.recordLength].idup);
+			++curRecordI;
+		/* } */
 	}
 
 	auto length() @property const
 	{
 		return _header.numRecords;
 	}
+
+	static if (isForwardRange!R)
+		auto save() @property
+		{
+			return this;
+		}
 
 
 	private:
@@ -260,6 +285,7 @@ struct xBaseRangeReader(R)
 		enforce(!_input.empty && _input.front == '\r', "Insufficient input");
 
 		// We should now be at the records proper
+		_input.popFront();
 	}
 }
 

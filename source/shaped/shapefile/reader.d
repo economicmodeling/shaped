@@ -78,6 +78,7 @@ struct ShapeRangeReader(R)
 		R _input;
 		Shape _front;
 		size_t _bytesRead = 0;
+		bool _empty = false;
 
 		ShapefileHeader _header;
 
@@ -138,21 +139,11 @@ struct ShapeRangeReader(R)
 		_input = input;
 		readHeader();
 
-		if (!empty)
-			popFront();	// prime _front
+		if (input.empty)
+			_empty = true;
+		else
+			popFront(); // prime _front
 	}
-
-	/**
-	 * Read a shapefile from input.  R must be an forward range of ubytes which
-	 * supports slicing.
-	 */
-	/* this(R)(R input, const ShapeIndexReader index) if (isForwardRange!R) */
-	/* { */
-	/* 	_index = index; */
-	/* 	_useIndex = true; */
-	/* 	this(input); */
-	/* 	_recordStart = _input.save; */
-	/* } */
 
 	private struct FrontInfo
 	{
@@ -169,22 +160,28 @@ struct ShapeRangeReader(R)
 	///
 	const(Shape) front() @property const
 	{
+		assert(!empty);
 		return _front;
 	}
 
 	///
 	bool empty() @property const
 	{
-		return _bytesRead >= fileLength;
+		return _empty;
 	}
 
 	///
 	void popFront()
 	{
 		assert(!empty);
+		if (_bytesRead >= fileLength)
+		{
+			_empty = true;
+			return;
+		}
+
 		auto info = readRecord();
 		_front = info.shape;
-
 		_bytesRead += info.recordLength;
 	}
 
