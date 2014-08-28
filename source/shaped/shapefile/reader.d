@@ -8,6 +8,7 @@
  */
 module shaped.shapefile.reader;
 
+import std.stdio;
 import std.bitmanip, std.exception, std.system;
 import std.range, std.traits;
 import shaped.format;
@@ -28,10 +29,15 @@ class ShapeReadException : Exception
 	}
 }
 
-ShapeRangeReader!R shapeRangeReader(R)(R input)
+ShapeRangeReader!R shapefileReader(R)(R input)
 	if (isInputRange!(R) && is(ElementType!R : ubyte))
 {
 	return ShapeRangeReader!R(input);
+}
+
+auto shapefileReader(ref File f)
+{
+	return f.byChunk(4096).joiner().shapefileReader;
 }
 
 

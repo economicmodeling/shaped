@@ -1,6 +1,5 @@
 /**
  * Structures described by the ESRI Shapefile file format.
- * Note: given their rarity, three-dimensional shapefiles and those with the 'M' shape type are not currently supported.
  */
 module shaped.format;
 
