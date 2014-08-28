@@ -99,3 +99,48 @@ bool isMultiPointType(const ShapeType type) pure nothrow
 static assert(ShapeType.MultiPoint.isMultiPointType);
 static assert(ShapeType.MultiPointZ.isMultiPointType);
 static assert(ShapeType.MultiPointM.isMultiPointType);
+
+///
+auto getNumPoints(const Shape shape) pure nothrow
+{
+	final switch (shape.type) with (ShapeType)
+	{
+		case Null: return 0;
+		case Point, PointZ, PointM: return 1;
+
+		case MultiPoint:  return shape._multipoint.numPoints;
+		case MultiPointZ: return shape._multipointz.numPoints;
+		case MultiPointM: return shape._multipointm.numPoints;
+
+		case PolyLine:  return shape._polyline.numPoints;
+		case PolyLineZ: return shape._polylinez.numPoints;
+		case PolyLineM: return shape._polylinem.numPoints;
+
+		case Polygon:  return shape._polygon.numPoints;
+		case PolygonZ: return shape._polygonz.numPoints;
+		case PolygonM: return shape._polygonm.numPoints;
+
+		case MultiPatch: return shape._multipatch.numPoints;
+	}
+}
+
+///
+auto getNumParts(const Shape shape) pure nothrow
+{
+	final switch (shape.type) with (ShapeType)
+	{
+		case Null: return 0;
+		case Point, PointZ, PointM: return 0;
+		case MultiPoint, MultiPointZ, MultiPointM: return 0;
+
+		case PolyLine:  return shape._polyline.numParts;
+		case PolyLineZ: return shape._polylinez.numParts;
+		case PolyLineM: return shape._polylinem.numParts;
+
+		case Polygon:  return shape._polygon.numParts;
+		case PolygonZ: return shape._polygonz.numParts;
+		case PolygonM: return shape._polygonm.numParts;
+
+		case MultiPatch: return shape._multipatch.numParts;
+	}
+}
