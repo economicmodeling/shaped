@@ -63,3 +63,39 @@ auto rings(S)(const S shape) if (hasRings!S)
 	}
 	return RingTraverser(shape);
 }
+
+///
+bool isPointType(const ShapeType type) pure nothrow
+{
+	return type % 10 == 1;
+}
+static assert(ShapeType.Point.isPointType);
+static assert(ShapeType.PointZ.isPointType);
+static assert(ShapeType.PointM.isPointType);
+
+///
+bool isPolyLineType(const ShapeType type) pure nothrow
+{
+	return type % 10 == 3;
+}
+static assert(ShapeType.PolyLine.isPolyLineType);
+static assert(ShapeType.PolyLineZ.isPolyLineType);
+static assert(ShapeType.PolyLineM.isPolyLineType);
+
+///
+bool isPolygonType(const ShapeType type) pure nothrow
+{
+	return type % 10 == 5;
+}
+static assert(ShapeType.Polygon.isPolygonType);
+static assert(ShapeType.PolygonZ.isPolygonType);
+static assert(ShapeType.PolygonM.isPolygonType);
+
+///
+bool isMultiPointType(const ShapeType type) pure nothrow
+{
+	return type % 10 == 8;
+}
+static assert(ShapeType.MultiPoint.isMultiPointType);
+static assert(ShapeType.MultiPointZ.isMultiPointType);
+static assert(ShapeType.MultiPointM.isMultiPointType);
