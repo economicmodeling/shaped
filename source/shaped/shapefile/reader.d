@@ -40,6 +40,11 @@ auto shapefileReader(ref File f)
 	return f.byChunk(4096).joiner().shapefileReader;
 }
 
+auto shapefileReader(File* f)
+{
+	return f.byChunk(4096).joiner().shapefileReader;
+}
+
 
 struct ShapefileHeader
 {
