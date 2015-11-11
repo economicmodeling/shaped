@@ -8,7 +8,7 @@
  */
 module shaped.shapefile.reader;
 
-import std.stdio;
+import std.stdio, std.algorithm;
 import std.bitmanip, std.exception, std.system;
 import std.range, std.traits;
 import shaped.format;
